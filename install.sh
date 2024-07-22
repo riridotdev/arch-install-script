@@ -16,6 +16,15 @@ if ! systemctl is-active systemd-networkd; then
         sleep 1
     done
 fi
+if ! systemctl is-enabled systemd-resolved; then
+    systemctl enable systemd-resolved
+fi
+if ! systemctl is-active systemd-resolved; then
+    systemctl start systemd-resolved
+    while ! systemctl is-active systemd-resolved; do
+        sleep 1
+    done
+fi
 
 network_file=20-wired.network
 network_file_path=/etc/systemd/network/$network_file 
@@ -23,19 +32,13 @@ network_file_path=/etc/systemd/network/$network_file
 if [ ! -f $network_file_path ]; then
     cat <<-EOF > $network_file_path
 	[Match]
-	Name=ens3
+	Name=enp5s0
 	
 	[Network]
 	DHCP=yes
 	EOF
 
     systemctl restart systemd-networkd
-fi
-
-resolv_conf=/etc/resolv.conf
-
-if ! grep "nameserver 8.8.8.8" $resolv_conf; then
-    echo "nameserver 8.8.8.8" >> $resolv_conf
 fi
 
 install_list=(
@@ -121,7 +124,6 @@ install_list=(
 
     # Networking
     "bind"
-    "dnsmasq"
     "mtr"
     "nmap"
     "openbsd-netcat"
