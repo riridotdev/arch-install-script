@@ -7,32 +7,44 @@ if [ $(id -u) != 0 ]; then
     exit 1
 fi
 
-if ! systemctl is-enabled systemd-networkd; then
-    systemctl enable systemd-networkd
-fi
-if ! systemctl is-active systemd-networkd; then
-    systemctl start systemd-networkd
-    while ! systemctl is-active systemd-networkd; do
-        sleep 1
-    done
-fi
-if ! systemctl is-enabled systemd-resolved; then
-    systemctl enable systemd-resolved
-fi
-if ! systemctl is-active systemd-resolved; then
-    systemctl start systemd-resolved
-    while ! systemctl is-active systemd-resolved; do
-        sleep 1
-    done
-fi
+services=(
+    "systemd-networkd"
+    "systemd-resolved"
+    "systemd-timesyncd"
+)
 
-network_file=20-wired.network
-network_file_path=/etc/systemd/network/$network_file 
+for service in ${services[@]}; do
+    if ! systemctl is-enabled "${service}"; then
+        systemctl enable "${service}"
+    fi
+    if ! systemctl is-active "${service}"; then
+        systemctl start "${service}"
+        while ! systemctl is-active "${serivce}"; do
+            sleep 1
+        done
+    fi
+done
 
-if [ ! -f $network_file_path ]; then
-    cat <<-EOF > $network_file_path
+network_file_dir=/etc/systemd/network/
+
+wired_network_file_path="${network_file_dir}20-wired.network"
+if [ ! -f $wired_network_file_path ]; then
+    cat <<-EOF > "$wired_network_file_path"
 	[Match]
 	Name=enp5s0
+	
+	[Network]
+	DHCP=yes
+	EOF
+
+    systemctl restart systemd-networkd
+fi
+
+wireless_network_file_path="${network_file_dir}30-wireless.network"
+if [ ! -f $wireless_network_file_path ]; then
+    cat <<-EOF > "$wireless_network_file_path"
+	[Match]
+	Name=wlan0
 	
 	[Network]
 	DHCP=yes
@@ -49,11 +61,13 @@ install_list=(
     "lua"
     "nodejs"
     "python"
+    "terraform"
 
     # Language Servers and Tools
     "gopls"
     "lua-language-server"
     "shellcheck"
+    "shfmt"
     "typescript-language-server"
 
     # Debuggers and Analysis
@@ -62,12 +76,14 @@ install_list=(
     "valgrind"
 
     # Build Tools
+    "cmake"
     "make"
     "pkgconf"
     
     # Shell and Terminal
     "dash"
     "fish"
+    "fisher"
     "kitty"
     "starship"
 
@@ -75,15 +91,18 @@ install_list=(
     "neovim"
 
     # CLI Tools
+    "alsa-utils"
     "bat"
     "bc"
     "cifs-utils"
     "cloc"
     "coreutils"
+    "dmidecode"
     "expect"
     "eza"
     "fd"
     "file"
+    "freerdp"
     "fzf"
     "git"
     "git-delta"
@@ -91,14 +110,21 @@ install_list=(
     "htop"
     "httpie"
     "jq"
+    "libva-utils"
     "lsof"
+    "man-db"
+    "man-pages"
+    "perf"
     "postgresql"
     "pwgen"
     "ripgrep"
+    "rsync"
     "sudo"
+    "sysstat"
     "tree"
     "unzip"
     "which"
+    "zip"
     "zoxide"
 
     # Virtualisation
@@ -106,13 +132,14 @@ install_list=(
     "libvirt"
     "qemu-base"
     "remmina"
+    "virt-install"
 
     # Third Party
     "aws-cli"
     "discord"
     "firefox"
+    "firefox-developer-edition"
     "github-cli"
-    #"steam"
 
     # Graphical
     "gammastep"
@@ -121,6 +148,7 @@ install_list=(
     "wev"
     "wl-clipboard"
     "zathura"
+    "zathura-pdf-poppler"
 
     # Networking
     "bind"
@@ -143,6 +171,18 @@ for i in ${install_list[@]}; do
     fi
 done
 
+if lcpci | grep "Radeon RX"; then
+    pacman -S --noconfirm libva-mesa-driver
+fi
+
+if lscpu | grep "GenuineIntel"; then
+    pacman -S --noconfirm intel-ucode
+fi
+
+if ! systemctl is-enabled libvirtd; then
+    systemctl enable libvirtd
+fi
+
 if [ $(realpath /usr/bin/sh) != $(which dash) ]; then
     ln -snf $(which dash) /usr/bin/sh
 fi
@@ -156,6 +196,18 @@ fi
 if ! id ryan; then
     useradd -m -G wheel -s $(which bash) ryan
 fi
+
+groups=(
+    "docker"
+    "libvirt"
+    "wireshark"
+)
+for group in ${groups[@]}; do
+    if ! groups ryan | grep -w ${group}; then
+        echo "Adding user 'ryan' to group '${group}'"
+        usermod ryan -aG ${group}
+    fi
+done
 
 su ryan <<'EOF'
 github_dir=~/dev/riridotdev
@@ -179,5 +231,9 @@ if [ ! -d $github_dir/sto ]; then
     ln -sn $github_dir/sto/sto.sh ~/.local/bin/sto
 
     ~/.local/bin/sto apply $github_dir/dotfiles
+fi
+
+if ! fish -c "fisher list | grep -w jorgebucaran/autopair.fish"; then
+    fish -c "fisher install jorgebucaran/autopair.fish"
 fi
 EOF
