@@ -152,6 +152,7 @@ install_list=(
 
     # Networking
     "bind"
+    "iwd"
     "mtr"
     "nmap"
     "openbsd-netcat"
@@ -210,6 +211,19 @@ for group in ${groups[@]}; do
 done
 
 su ryan <<'EOF'
+default_dirs=(
+    "~/dev/temp"
+    "~/dev/riri"
+
+    "~/mount"
+)
+
+for dir in ${default_dirs[@]}; do
+    if [ ! -d "${dir}" ]; then
+        mkdir -p "${dir}"
+    fi
+done
+
 github_dir=~/dev/riridotdev
 github_url=https://github.com/riridotdev
 
