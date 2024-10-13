@@ -172,12 +172,16 @@ for i in ${install_list[@]}; do
     fi
 done
 
-if lcpci | grep "Radeon RX"; then
-    pacman -S --noconfirm libva-mesa-driver
+if lspci | grep "Radeon RX"; then
+    if ! pacman -Q libva-mesa-driver &>/dev/null; then
+        pacman -S --noconfirm libva-mesa-driver
+    fi
 fi
 
 if lscpu | grep "GenuineIntel"; then
-    pacman -S --noconfirm intel-ucode
+    if ! pacman -Q intel-ucode &>/dev/null; then
+        pacman -S --noconfirm intel-ucode
+    fi
 fi
 
 if ! systemctl is-enabled libvirtd; then
@@ -219,6 +223,7 @@ default_dirs=(
 )
 
 for dir in ${default_dirs[@]}; do
+    dir=${dir/\~/$HOME}
     if [ ! -d "${dir}" ]; then
         mkdir -p "${dir}"
     fi
