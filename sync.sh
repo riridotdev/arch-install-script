@@ -133,6 +133,7 @@ install_list=(
     "qemu-base"
     "remmina"
     "virt-install"
+    "virt-viewer"
 
     # Third Party
     "aws-cli"
@@ -152,6 +153,7 @@ install_list=(
 
     # Networking
     "bind"
+    "dnsmasq"
     "iwd"
     "mtr"
     "nmap"
@@ -255,4 +257,6 @@ fi
 if ! fish -c "fisher list | grep -w jorgebucaran/autopair.fish"; then
     fish -c "fisher install jorgebucaran/autopair.fish"
 fi
+
+bat cache -b
 EOF
