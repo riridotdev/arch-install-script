@@ -58,6 +58,7 @@ install_list=(
     "clang"
     "gcc"
     "go"
+    "llvm"
     "lua"
     "nodejs"
     "python"
@@ -91,7 +92,6 @@ install_list=(
     "neovim"
 
     # CLI Tools
-    "alsa-utils"
     "bat"
     "bc"
     "cifs-utils"
@@ -131,7 +131,6 @@ install_list=(
     "docker"
     "libvirt"
     "qemu-base"
-    "remmina"
     "virt-install"
     "virt-viewer"
 
@@ -143,6 +142,7 @@ install_list=(
     "github-cli"
 
     # Graphical
+    "eog"
     "gammastep"
     "nautilus"
     "sway"
@@ -156,6 +156,7 @@ install_list=(
     "dnsmasq"
     "iwd"
     "mtr"
+    "net-tools"
     "nmap"
     "openbsd-netcat"
     "openssh"
@@ -164,8 +165,19 @@ install_list=(
     "whois"
     "wireshark-qt"
 
+    # Audio
+    "alsa-utils"
+    "pulseaudio"
+    "xdg-desktop-portal"
+    "xdg-desktop-portal-wlr"
+
     # Fonts
+    "noto-fonts"
     "ttf-hack-nerd"
+
+    # Libraries
+    "glfw"
+    "raylib"
 )
 
 for i in ${install_list[@]}; do
