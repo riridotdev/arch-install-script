@@ -77,6 +77,7 @@ install_list=(
     "valgrind"
 
     # Build Tools
+    "base-devel"
     "cmake"
     "make"
     "pkgconf"
@@ -92,6 +93,7 @@ install_list=(
     "neovim"
 
     # CLI Tools
+    "ansible"
     "bat"
     "bc"
     "cifs-utils"
@@ -129,6 +131,7 @@ install_list=(
 
     # Virtualisation
     "docker"
+    "docker-compose"
     "libvirt"
     "qemu-base"
     "virt-install"
@@ -153,6 +156,7 @@ install_list=(
 
     # Networking
     "bind"
+    "dog"
     "dnsmasq"
     "iwd"
     "mtr"
@@ -173,6 +177,7 @@ install_list=(
 
     # Fonts
     "noto-fonts"
+    "ttf-dejavu"
     "ttf-hack-nerd"
 
     # Libraries
