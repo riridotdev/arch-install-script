@@ -94,6 +94,7 @@ install_list=(
 
     # CLI Tools
     "ansible"
+    "archlinux-keyring"
     "bat"
     "bc"
     "cifs-utils"
@@ -121,6 +122,7 @@ install_list=(
     "pwgen"
     "ripgrep"
     "rsync"
+    "strace"
     "sudo"
     "sysstat"
     "tree"
@@ -158,6 +160,7 @@ install_list=(
     "bind"
     "dog"
     "dnsmasq"
+    "ethtool"
     "iwd"
     "mtr"
     "net-tools"
